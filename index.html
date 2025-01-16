@@ -7,15 +7,14 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #6e7e8f, #ccd6f6);
             margin: 0;
+            overflow: hidden; /* Prevents scrollbars */
+            height: 100vh;
             color: #fff;
         }
         .container {
+            position: relative;
+            z-index: 1;
             text-align: center;
             border-radius: 12px;
             padding: 30px;
@@ -67,37 +66,72 @@
 </head>
 <body>
 
-    <div class="container">
-        <h1>Color Picker</h1>
-        <p>Please select a color:</p>
+<canvas id="backgroundCanvas"></canvas>
 
-        <!-- 颜色选择和显示的容器 -->
-        <div class="color-picker-wrapper">
-            <input type="color" id="color-picker" value="#ff0000">
-            <div class="color-display" id="color-display"></div>
-        </div>
+<div class="container">
+    <h1>Color Picker</h1>
+    <p>Please select a color:</p>
 
-        <!-- 显示颜色代码 -->
-        <p class="color-code" id="color-code">#ff0000</p>
+    <!-- 颜色选择和显示的容器 -->
+    <div class="color-picker-wrapper">
+        <input type="color" id="color-picker" value="#ff0000">
+        <div class="color-display" id="color-display"></div>
     </div>
 
-    <script>
-        // 获取DOM元素
-        const colorPicker = document.getElementById('color-picker');
-        const colorDisplay = document.getElementById('color-display');
-        const colorCode = document.getElementById('color-code');
+    <!-- 显示颜色代码 -->
+    <p class="color-code" id="color-code">#ff0000</p>
+</div>
 
-        // 监听颜色选择事件
-        colorPicker.addEventListener('input', function() {
-            const selectedColor = colorPicker.value;
-            
-            // 更新显示颜色
-            colorDisplay.style.backgroundColor = selectedColor;
-            
-            // 更新颜色代码
-            colorCode.textContent = selectedColor;
-        });
-    </script>
+<script>
+    // Set up the canvas
+    const canvas = document.getElementById('backgroundCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Adjust canvas size to cover the entire window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Define dynamic gradient colors
+    let t = 0; // Time variable for animation
+    function drawBackground() {
+        // Calculate the colors based on time
+        const color1 = `rgb(${Math.sin(t) * 255}, ${Math.cos(t) * 255}, 180)`;
+        const color2 = `rgb(${Math.cos(t) * 255}, ${Math.sin(t) * 255}, 220)`;
+        const color3 = `rgb(${Math.sin(t) * 255}, 180, ${Math.cos(t) * 255})`;
+        
+        // Create a dynamic gradient
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, color1);
+        gradient.addColorStop(0.5, color2);
+        gradient.addColorStop(1, color3);
+        
+        // Clear the canvas and fill it with the gradient
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        t += 0.01; // Increment time for animation
+        requestAnimationFrame(drawBackground); // Keep the animation going
+    }
+    
+    // Start the animation
+    drawBackground();
+    
+    // Color picker functionality
+    const colorPicker = document.getElementById('color-picker');
+    const colorDisplay = document.getElementById('color-display');
+    const colorCode = document.getElementById('color-code');
+
+    colorPicker.addEventListener('input', function() {
+        const selectedColor = colorPicker.value;
+        
+        // Update display color
+        colorDisplay.style.backgroundColor = selectedColor;
+        
+        // Update color code text
+        colorCode.textContent = selectedColor;
+    });
+</script>
 
 </body>
 </html>
