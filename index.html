@@ -21,6 +21,8 @@
             background-color: rgba(255, 255, 255, 0.85);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             width: 400px;
+            max-width: 90%;
+            margin: auto;
         }
         h1 {
             font-size: 2.5rem;
@@ -91,13 +93,13 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Define dynamic gradient colors
+    // Define dynamic gradient colors with softer pastel shades
     let t = 0; // Time variable for animation
     function drawBackground() {
-        // Calculate the colors based on time
-        const color1 = `rgb(${Math.sin(t) * 255}, ${Math.cos(t) * 255}, 180)`;
-        const color2 = `rgb(${Math.cos(t) * 255}, ${Math.sin(t) * 255}, 220)`;
-        const color3 = `rgb(${Math.sin(t) * 255}, 180, ${Math.cos(t) * 255})`;
+        // Calculate the colors based on time (pastel shades)
+        const color1 = `rgb(${Math.sin(t) * 150 + 180}, ${Math.cos(t) * 150 + 180}, 255)`;
+        const color2 = `rgb(${Math.cos(t) * 150 + 180}, ${Math.sin(t) * 150 + 180}, 255)`;
+        const color3 = `rgb(${Math.sin(t) * 150 + 180}, 220, ${Math.cos(t) * 150 + 180})`;
         
         // Create a dynamic gradient
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
