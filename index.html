@@ -108,19 +108,33 @@
     // Define dynamic gradient colors with added randomness
     let t = 0; // Time variable for animation
     let baseColor = [255, 0, 0]; // Default color is red
+    let targetColor = [255, 0, 0]; // Target color for smooth transition
+    let transitionSpeed = 0.02; // Speed of the transition
+    
+    // Function to interpolate between two colors
+    function interpolateColor(startColor, endColor, factor) {
+        return [
+            Math.round(startColor[0] + (endColor[0] - startColor[0]) * factor),
+            Math.round(startColor[1] + (endColor[1] - startColor[1]) * factor),
+            Math.round(startColor[2] + (endColor[2] - startColor[2]) * factor)
+        ];
+    }
     
     function drawBackground() {
-        // Introduce randomness based on the selected color
-        let r = baseColor[0] + Math.sin(t * 0.5) * 50;
-        let g = baseColor[1] + Math.cos(t * 0.3) * 50;
-        let b = baseColor[2] + Math.sin(t * 0.2) * 50;
+        // Smooth transition between baseColor and targetColor
+        const smoothColor = interpolateColor(baseColor, targetColor, t);
+        
+        // Introduce randomness based on the smooth color
+        let r = smoothColor[0] + Math.sin(t * 0.5) * 50;
+        let g = smoothColor[1] + Math.cos(t * 0.3) * 50;
+        let b = smoothColor[2] + Math.sin(t * 0.2) * 50;
         
         // Ensure that the values remain within valid RGB ranges (0-255)
         r = Math.min(Math.max(r, 0), 255);
         g = Math.min(Math.max(g, 0), 255);
         b = Math.min(Math.max(b, 0), 255);
         
-        // Calculate other gradient colors based on the base color
+        // Calculate other gradient colors based on the smoothed color
         const color1 = `rgb(${r}, ${g}, 255)`;
         const color2 = `rgb(${g}, ${r}, 255)`;
         const color3 = `rgb(${r}, 230, ${b})`;
@@ -136,8 +150,10 @@
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        t += 0.01; // Increment time for animation
-        requestAnimationFrame(drawBackground); // Keep the animation going
+        t += transitionSpeed; // Increment time for animation
+        if (t < 1) {
+            requestAnimationFrame(drawBackground); // Continue the animation if transition is not complete
+        }
     }
     
     // Start the animation
@@ -159,11 +175,14 @@
         
         // Extract RGB values from the selected hex color
         const hex = selectedColor.slice(1);
-        baseColor = [
+        targetColor = [
             parseInt(hex.slice(0, 2), 16),
             parseInt(hex.slice(2, 4), 16),
             parseInt(hex.slice(4, 6), 16)
         ];
+        
+        // Reset the time to 0 to start a smooth transition
+        t = 0;
     });
 </script>
 
