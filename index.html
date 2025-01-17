@@ -118,6 +118,15 @@
         ];
     }
     
+    // Randomly generate new target colors for the smooth transition
+    function getRandomColor() {
+        return [
+            Math.floor(Math.random() * 256),
+            Math.floor(Math.random() * 256),
+            Math.floor(Math.random() * 256)
+        ];
+    }
+    
     function drawBackground() {
         // Smooth transition between baseColor and targetColor
         const smoothColor = interpolateColor(baseColor, targetColor, t);
@@ -149,12 +158,13 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         t += transitionSpeed; // Increment time for animation
-        if (t < 1) {
-            requestAnimationFrame(drawBackground); // Continue the animation if transition is not complete
-        } else {
-            t = 0; // Reset the time once the animation completes for a continuous effect
-            setTimeout(drawBackground, 100); // Repeat after a short delay
+        if (t >= 1) {
+            // Once one cycle is complete, reset the time and generate a new random target color
+            t = 0;
+            targetColor = getRandomColor(); // Set a new random target color for the next cycle
         }
+        
+        requestAnimationFrame(drawBackground); // Continue the animation seamlessly
     }
     
     // Start the animation
@@ -182,7 +192,7 @@
             parseInt(hex.slice(4, 6), 16)
         ];
         
-        // Reset the time to 0 to start a smooth transition
+        // Reset the time to 0 to start a smooth transition with the new target color
         t = 0;
     });
 </script>
