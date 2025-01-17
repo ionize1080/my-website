@@ -86,13 +86,11 @@
     <h1>Color Picker</h1>
     <p>Please select a color:</p>
 
-    <!-- 颜色选择和显示的容器 -->
     <div class="color-picker-wrapper">
         <input type="color" id="color-picker" value="#ff0000">
         <div class="color-display" id="color-display"></div>
     </div>
 
-    <!-- 显示颜色代码 -->
     <p class="color-code" id="color-code">#ff0000</p>
 </div>
 
@@ -125,9 +123,9 @@
         const smoothColor = interpolateColor(baseColor, targetColor, t);
         
         // Introduce randomness based on the smooth color
-        let r = smoothColor[0] + Math.sin(t * 0.5) * 50;
-        let g = smoothColor[1] + Math.cos(t * 0.3) * 50;
-        let b = smoothColor[2] + Math.sin(t * 0.2) * 50;
+        let r = smoothColor[0] + Math.sin(t * 0.5) * 100;
+        let g = smoothColor[1] + Math.cos(t * 0.3) * 100;
+        let b = smoothColor[2] + Math.sin(t * 0.2) * 100;
         
         // Ensure that the values remain within valid RGB ranges (0-255)
         r = Math.min(Math.max(r, 0), 255);
@@ -142,7 +140,7 @@
         // Create a dynamic gradient
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         gradient.addColorStop(0, color1);
-        gradient.addColorStop(0.5, color2);
+        gradient.addColorStop(0.5 + Math.sin(t * 0.7) * 0.1, color2);  // Dynamic stop
         gradient.addColorStop(1, color3);
         
         // Clear the canvas and fill it with the gradient
@@ -153,6 +151,9 @@
         t += transitionSpeed; // Increment time for animation
         if (t < 1) {
             requestAnimationFrame(drawBackground); // Continue the animation if transition is not complete
+        } else {
+            t = 0; // Reset the time once the animation completes for a continuous effect
+            setTimeout(drawBackground, 100); // Repeat after a short delay
         }
     }
     
