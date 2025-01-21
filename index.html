@@ -107,7 +107,7 @@
     let t = 0; // Time variable for animation
     let baseColor = [255, 0, 0]; // Default color is red
     let targetColor = [255, 0, 0]; // Target color for smooth transition
-    let transitionSpeed = 0.01; // Slow down the transition for smoother effect
+    let transitionSpeed = 0.001; // Slow down the transition for smoother effect
     
     // Function to interpolate between two colors
     function interpolateColor(startColor, endColor, factor) {
@@ -158,7 +158,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         t += transitionSpeed; // Increment time for animation
-        if (t >= 1) {
+        if (t >= 10) {
             // Once one cycle is complete, reset the time and generate a new random target color
             t = 0;
             targetColor = getRandomColor(); // Set a new random target color for the next cycle
