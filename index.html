@@ -107,7 +107,7 @@
     let t = 0; // Time variable for animation
     let baseColor = [255, 0, 0]; // Default color is red
     let targetColor = [255, 0, 0]; // Target color for smooth transition
-    let transitionSpeed = 0.02; // Speed of the transition
+    let transitionSpeed = 0.01; // Slow down the transition for smoother effect
     
     // Function to interpolate between two colors
     function interpolateColor(startColor, endColor, factor) {
@@ -131,10 +131,10 @@
         // Smooth transition between baseColor and targetColor
         const smoothColor = interpolateColor(baseColor, targetColor, t);
         
-        // Introduce randomness based on the smooth color
-        let r = smoothColor[0] + Math.sin(t * 0.5) * 100;
-        let g = smoothColor[1] + Math.cos(t * 0.3) * 100;
-        let b = smoothColor[2] + Math.sin(t * 0.2) * 100;
+        // Slightly smooth out the random adjustments for a more gradual effect
+        let r = smoothColor[0] + Math.sin(t * 0.1) * 30;
+        let g = smoothColor[1] + Math.cos(t * 0.1) * 30;
+        let b = smoothColor[2] + Math.sin(t * 0.1) * 30;
         
         // Ensure that the values remain within valid RGB ranges (0-255)
         r = Math.min(Math.max(r, 0), 255);
@@ -149,7 +149,7 @@
         // Create a dynamic gradient
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         gradient.addColorStop(0, color1);
-        gradient.addColorStop(0.5 + Math.sin(t * 0.7) * 0.1, color2);  // Dynamic stop
+        gradient.addColorStop(0.5 + Math.sin(t * 0.5) * 0.05, color2);  // Subtle dynamic stop
         gradient.addColorStop(1, color3);
         
         // Clear the canvas and fill it with the gradient
