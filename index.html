@@ -115,12 +115,11 @@
         ];
     }
     
+    // Improved random color generator using cryptographic randomness
     function getRandomColor() {
-        return [
-            Math.floor(Math.random() * 256),
-            Math.floor(Math.random() * 256),
-            Math.floor(Math.random() * 256)
-        ];
+        const array = new Uint8Array(3);
+        window.crypto.getRandomValues(array);
+        return [array[0], array[1], array[2]];
     }
 
     let frameCounter = 0; // Counter to limit frame rate
@@ -138,14 +137,18 @@
             g = Math.min(Math.max(g, 0), 255);
             b = Math.min(Math.max(b, 0), 255);
             
+            // Define multiple gradient colors for a richer effect
             const color1 = `rgb(${r}, ${g}, 255)`;
             const color2 = `rgb(${g}, ${r}, 255)`;
             const color3 = `rgb(${r}, 230, ${b})`;
+            const color4 = `rgb(${r + 20}, ${g + 40}, 180)`;
             
+            // Create a more complex linear gradient
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
             gradient.addColorStop(0, color1);
-            gradient.addColorStop(0.5 + Math.sin(t * 0.6) * 0.09, color2);
-            gradient.addColorStop(1, color3);
+            gradient.addColorStop(0.3 + Math.sin(t * 0.6) * 0.1, color2);
+            gradient.addColorStop(0.6 + Math.cos(t * 0.4) * 0.1, color3);
+            gradient.addColorStop(1, color4);
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = gradient;
@@ -182,6 +185,7 @@
         t = 0;
     });
 </script>
+
 
 </body>
 </html>
