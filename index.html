@@ -18,6 +18,7 @@
             background: #f5f5f5;
         }
         #backgroundCanvas {
+            filter: blur(80px);
             position: absolute;
             top: 0;
             left: 0;
@@ -122,45 +123,36 @@
         return [array[0], array[1], array[2]];
     }
 
-    let frameCounter = 0; // Counter to limit frame rate
+    const circles = [];
+    const numCircles = 6;
+    for (let i = 0; i < numCircles; i++) {
+        circles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: 120 + Math.random() * 80,
+            color: getRandomColor(),
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8
+        });
+    }
+
     function drawBackground() {
-        frameCounter++;
-        
-        // Update canvas at a reduced frame rate (e.g., every 3 frames)
-        if (frameCounter % 3 === 0) {
-            const smoothColor = interpolateColor(baseColor, targetColor, t);
-            let r = smoothColor[0] + Math.sin(t * 0.1) * 30;
-            let g = smoothColor[1] + Math.cos(t * 0.1) * 30;
-            let b = smoothColor[2] + Math.sin(t * 0.1) * 30;
-            
-            r = Math.min(Math.max(r, 0), 255);
-            g = Math.min(Math.max(g, 0), 255);
-            b = Math.min(Math.max(b, 0), 255);
-            
-            // Define multiple gradient colors for a richer effect
-            const color1 = `rgb(${r}, ${g}, 255)`;
-            const color2 = `rgb(${g}, ${r}, 255)`;
-            const color3 = `rgb(${r}, 230, ${b})`;
-            const color4 = `rgb(${r + 20}, ${g + 40}, 180)`;
-            
-            // Create a more complex linear gradient
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, color1);
-            gradient.addColorStop(0.3 + Math.sin(t * 0.6) * 0.1, color2);
-            gradient.addColorStop(0.6 + Math.cos(t * 0.4) * 0.1, color3);
-            gradient.addColorStop(1, color4);
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'lighter';
+        circles.forEach(c => {
+            const gradient = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius);
+            gradient.addColorStop(0, `rgba(${c.color[0]}, ${c.color[1]}, ${c.color[2]}, 0.8)`);
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            t += transitionSpeed;
-            if (t >= 10) {
-                t = 0;
-                targetColor = getRandomColor();
-            }
-        }
-        
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            c.x += c.vx;
+            c.y += c.vy;
+            if (c.x - c.radius < 0 || c.x + c.radius > canvas.width) c.vx *= -1;
+            if (c.y - c.radius < 0 || c.y + c.radius > canvas.height) c.vy *= -1;
+        });
         requestAnimationFrame(drawBackground);
     }
 
@@ -176,13 +168,12 @@
         colorCode.textContent = selectedColor;
         
         const hex = selectedColor.slice(1);
-        targetColor = [
+        const rgb = [
             parseInt(hex.slice(0, 2), 16),
             parseInt(hex.slice(2, 4), 16),
             parseInt(hex.slice(4, 6), 16)
         ];
-        
-        t = 0;
+        circles.forEach(c => c.color = rgb);
     });
 </script>
 
