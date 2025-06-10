@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,6 +37,17 @@
             width: 400px;
             max-width: 90%;
         }
+        .language-selector {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            z-index: 2;
+        }
+        .language-selector select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
         h1 {
             font-size: 2.5rem;
             color: #333;
@@ -65,6 +76,8 @@
             cursor: pointer;
             font-size: 1rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: #fff;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
         }
         .color-display {
             width: 100px;
@@ -104,6 +117,9 @@
         .dark-mode .color-code {
             color: #eee;
         }
+        .dark-mode button {
+            background: linear-gradient(to right, #555, #222);
+        }
         .recommendations {
             display: flex;
             flex-wrap: wrap;
@@ -133,11 +149,18 @@
 </head>
 <body>
 
+<div class="language-selector">
+    <select id="language-select">
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+    </select>
+</div>
+
 <canvas id="backgroundCanvas"></canvas>
 
 <div class="container">
-    <h1>Color Picker</h1>
-    <p>Please select a color:</p>
+    <h1 id="title">Color Picker</h1>
+    <p id="select-color-text">Please select a color:</p>
 
     <div class="color-picker-wrapper">
         <input type="color" id="color-picker" value="#ff0000">
@@ -145,15 +168,15 @@
     </div>
 
     <div class="actions">
-        <button id="random-color">随机颜色</button>
-        <button id="copy-color">复制颜色</button>
-        <button id="theme-toggle">切换主题</button>
+        <button id="random-color">Random Color</button>
+        <button id="copy-color">Copy Color</button>
+        <button id="theme-toggle">Toggle Theme</button>
     </div>
 
     <p class="color-code" id="color-code">#ff0000</p>
 
     <div class="recommendation-section">
-        <h2>搭配推荐</h2>
+        <h2 id="recommendation-title">Recommendations</h2>
         <div class="recommendations" id="recommendations"></div>
     </div>
 </div>
@@ -166,6 +189,39 @@
     canvas.height = window.innerHeight;
     
     let t = 0;
+
+    const translations = {
+        en: {
+            randomColor: 'Random Color',
+            copyColor: 'Copy Color',
+            themeToggle: 'Toggle Theme',
+            copied: 'Copied to clipboard',
+            selectColor: 'Please select a color:',
+            recommendations: 'Recommendations',
+            title: 'Color Picker'
+        },
+        zh: {
+            randomColor: '随机颜色',
+            copyColor: '复制颜色',
+            themeToggle: '切换主题',
+            copied: '已复制到剪贴板',
+            selectColor: '请选择颜色：',
+            recommendations: '搭配推荐',
+            title: '颜色选择器'
+        }
+    };
+
+    let currentLang = 'en';
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.getElementById('random-color').textContent = translations[lang].randomColor;
+        document.getElementById('copy-color').textContent = translations[lang].copyColor;
+        document.getElementById('theme-toggle').textContent = translations[lang].themeToggle;
+        document.getElementById('select-color-text').textContent = translations[lang].selectColor;
+        document.getElementById('recommendation-title').textContent = translations[lang].recommendations;
+        document.getElementById('title').textContent = translations[lang].title;
+    }
 
     // Utility functions for color conversions
     function hexToRgb(hex) {
@@ -363,7 +419,7 @@
 
     document.getElementById('copy-color').addEventListener('click', () => {
         navigator.clipboard.writeText(colorCode.textContent).then(() => {
-            alert('已复制到剪贴板');
+            alert(translations[currentLang].copied);
         });
     });
 
@@ -371,7 +427,12 @@
         document.body.classList.toggle('dark-mode');
     });
 
+    document.getElementById('language-select').addEventListener('change', (e) => {
+        setLanguage(e.target.value);
+    });
+
     // initialize recommendations
+    setLanguage('en');
     updateRecommendations(colorPicker.value);
 </script>
 
