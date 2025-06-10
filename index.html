@@ -77,6 +77,34 @@
             margin-top: 10px;
             color: #333;
         }
+        .recommendation-section {
+            margin-top: 20px;
+        }
+        .recommendations {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .recommendation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+            font-size: 0.8rem;
+            color: #333;
+        }
+        .recommendation .swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            margin-bottom: 4px;
+        }
+        .recommendation .code {
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -93,6 +121,11 @@
     </div>
 
     <p class="color-code" id="color-code">#ff0000</p>
+
+    <div class="recommendation-section">
+        <h2>搭配推荐</h2>
+        <div class="recommendations" id="recommendations"></div>
+    </div>
 </div>
 
 <script>
@@ -163,6 +196,62 @@
             Math.round(startColor[2] + (endColor[2] - startColor[2]) * factor)
         ];
     }
+
+    function rgbToHex(r, g, b) {
+        const toHex = c => {
+            const hex = c.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+
+    function hslToHex(h, s, l) {
+        const [r, g, b] = hslToRgb(h, s, l);
+        return rgbToHex(r, g, b);
+    }
+
+    function generateRecommendations(baseHsl) {
+        const [h, s, l] = baseHsl;
+        const hues = [
+            h + 180, h + 120, h + 240,
+            h + 30, h - 30,
+            h + 150, h - 150,
+            h + 90, h + 270,
+            h
+        ];
+        const light = l > 50 ? l - 20 : l + 20;
+        return hues.map((hh, idx) => {
+            if (idx === hues.length - 1) {
+                return hslToHex((hh % 360 + 360) % 360, s, light);
+            }
+            return hslToHex((hh % 360 + 360) % 360, s, l);
+        });
+    }
+
+    const recommendationsDiv = document.getElementById('recommendations');
+
+    function updateRecommendations(hexColor) {
+        const rgb = hexToRgb(hexColor.slice(1));
+        const hsl = rgbToHsl(...rgb);
+        const colors = generateRecommendations(hsl);
+        recommendationsDiv.innerHTML = '';
+        colors.forEach(col => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'recommendation';
+
+            const swatch = document.createElement('div');
+            swatch.className = 'swatch';
+            swatch.style.backgroundColor = col;
+
+            const code = document.createElement('div');
+            code.className = 'code';
+            code.textContent = col;
+
+            wrapper.appendChild(swatch);
+            wrapper.appendChild(code);
+            recommendationsDiv.appendChild(wrapper);
+        });
+    }
     
     // Improved random color generator using cryptographic randomness
     function getRandomColor() {
@@ -231,7 +320,12 @@
             const light = Math.min(100, Math.max(0, baseHsl[2] + (index - numCircles / 2) * 5));
             c.hsl = [hue, sat, light];
         });
+
+        updateRecommendations(selectedColor);
     });
+
+    // initialize recommendations
+    updateRecommendations(colorPicker.value);
 </script>
 
 
